@@ -1,0 +1,26 @@
+{% extends 'network/layout.html' %}
+
+{% block body %}
+<div class="container-fluid">
+    <h2>Profile page</h2>
+    <div class="d-flex flex-column">
+        <span><strong>Username: </strong>{{ user.username }}</span>
+        <span><strong>Email: </strong>{{ user.email }}</span>
+    </div>
+
+    <div class="container d-flex flex-column" id="posts">
+        <div>
+            <h2>Posts</h2>
+        </div>
+        {% for post in user_posts %}
+        <div class="d-flex flex-column border border-secondary rounded p-3">
+            <h3>{{ post.user_id }}</h3>
+            <span>{{ post.content }}</span>
+            <span>{{ post.n_likes}} Likes</span>
+            <span class="text-right text-muted">{{ post.datetime }}</span>
+        </div>
+        {% endfor %}
+    </div>
+   
+</div>
+{% endblock %}

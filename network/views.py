@@ -74,4 +74,10 @@ def register(request):
         return render(request, "network/register.html")
 
 def profile(request):
-    pass
+    if request.method == "POST":
+        pass
+    else:
+        user = User.objects.get(id=request.user.id)
+        user_posts = Post.objects.filter(user_id=user)
+        context = {"user_posts": user_posts, "user":user}
+        return render(request, "network/profile.html", context)
