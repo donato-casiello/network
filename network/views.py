@@ -16,7 +16,10 @@ def index(request):
         new_post.save()
         return HttpResponseRedirect(reverse("index"))
     else:
-        return render(request, "network/index.html")
+        # Render all the posts
+        posts = Post.objects.all().order_by('-datetime')
+        context = {"posts": posts}
+        return render(request, "network/index.html", context)
 
 
 def login_view(request):

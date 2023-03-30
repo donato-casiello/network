@@ -13,7 +13,17 @@
     </div>
 
     <!--Other posts-->
-    <div id="posts">
-        <h2>All posts</h2>
+    <div class="container d-flex flex-column" id="posts">
+        <div>
+            <h2>All posts</h2>
+        </div>
+        {% for post in posts %}
+        <div class="d-flex flex-column border border-secondary rounded p-3">
+            <h3>{{ post.user_id }}</h3>
+            <span>{{ post.content }}</span>
+            <span>{{ post.n_likes}} Likes</span>
+            <span class="text-right text-muted">{{ post.datetime }}</span>
+        </div>
+        {% endfor %}
     </div>
 {% endblock %}
