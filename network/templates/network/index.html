@@ -4,9 +4,12 @@
     <!--Create new post-->
     <button id="create">Create new post</button>
     <div class="container" id="new">
-        <h2>New Post</h2>
-        <textarea class="form-control" placeholder="Create new post" name="new_post_content" id="" cols="30" rows="3"></textarea>
-        <input class="btn btn-primary my-3" type="submit" value="Post">
+        <form action="{% url 'index' %}" method="post">
+            {% csrf_token %}
+            <h2>New Post</h2>
+            <textarea class="form-control" placeholder="Create new post" name="new_post_content" id="" cols="30" rows="3"></textarea>
+            <input class="btn btn-primary my-3" type="submit" value="Post">
+        </form>
     </div>
 
     <!--Other posts-->
