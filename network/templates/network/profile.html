@@ -2,17 +2,35 @@
 
 {% block body %}
 <div class="container-fluid">
-    <h2>Profile page</h2>
-    <div class="d-flex flex-column">
-        <span><strong>Username: </strong>{{ user.username }}</span>
-        <span><strong>Email: </strong>{{ user.email }}</span>
+    <h2>Profile page - {{ user_profile.username }}</h2>
+    <div class="container-fluid row justify-content-evenly">
+            <div class="col">
+                <div class="d-flex flex-column">
+                    <span><strong>Username: </strong>{{ user_profile.username }}</span>
+                    <span><strong>Email: </strong>{{ user_profile.email }}</span>
+                </div>
+            </div>
+            <div class="col">
+                {% if user != user_profile %}
+                    {% csrf_token %}
+                    {% if is_following == False %}
+                        <button onclick="followUser('{{user_profile.id}}')" id="seguito" data-username="{{ user_profile.id }}" class="btn btn-primary"
+                        >Follow
+                    </button>
+                    {% else %}
+                        <button onclick="unfollowUser('{{user_profile.id}}')" id="non-seguito" data-username="{{ user_profile.id }}" class="btn btn-secondary"
+                        >Unfollow
+                        </button>
+                    {% endif %}
+                {% endif %}
+            </div>
     </div>
 
     <div class="container d-flex flex-column" id="posts">
         <div>
             <h2>Posts</h2>
         </div>
-        {% for post in user_posts %}
+        {% for post in user_profile_posts %}
         <div class="d-flex flex-column border border-secondary rounded p-3">
             <h3>{{ post.user_id }}</h3>
             <span>{{ post.content }}</span>

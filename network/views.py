@@ -1,10 +1,13 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, Comment, Post
+
+from .models import User, Comment, Post, Follower
 
 
 def index(request):
@@ -73,11 +76,41 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
-def profile(request):
+def profile(request, username):
+    # Display the information about the requested user
+    user = User.objects.get(id=request.user.id) # User who is signed in
+    user_profile = User.objects.get(username=username)
+    user_profile_posts = Post.objects.filter(user_id=user_profile)
+    # Check if user follow the user_profile
+    user_following = Follower.objects.filter(user=user)
+    is_following = False
+    for i in user_following:
+        if i.following == user_profile:
+            is_following = True
+            break
+        else:
+            is_following = False
+    context = {"user_posts": user_profile_posts, "user_profile":user_profile, "user":user, "is_following":is_following}
+    return render(request, "network/profile.html", context)
+
+@csrf_exempt
+def follow(request, user_id):
     if request.method == "POST":
-        pass
-    else:
-        user = User.objects.get(id=request.user.id)
-        user_posts = Post.objects.filter(user_id=user)
-        context = {"user_posts": user_posts, "user":user}
-        return render(request, "network/profile.html", context)
+        user = User.objects.get(pk=request.user.id)
+        data = json.loads(request.body)
+        user_to_follow = User.objects.get(pk=user_id) 
+        content = data["content"]
+        new_follower = Follower(user=user, following=user_to_follow)
+        new_follower.save()
+        return JsonResponse({"message":"Follow successfully", "content":content, "user_to_follow":data["content"]})
+    
+
+def unfollow(request, user_id):
+    if request.method == "POST":
+        user = User.objects.get(pk=request.user.id)
+        data = json.loads(request.body)
+        user_to_unfollow = User.objects.get(pk=user_id) 
+        content = data["content"]
+        delete_follow = Follower.objects.filter(user=user, following=user_to_unfollow)
+        delete_follow.delete()
+        return JsonResponse({"message":"Unfollow successfully", "content":content, "user_to_unfollow":data["content"]})
