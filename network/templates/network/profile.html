@@ -13,15 +13,16 @@
             <div class="col">
                 {% if user != user_profile %}
                     {% csrf_token %}
-                    {% if is_following == False %}
+                    <div id="follow">
                         <button onclick="followUser('{{user_profile.id}}')" id="seguito" data-username="{{ user_profile.id }}" class="btn btn-primary"
                         >Follow
                     </button>
-                    {% else %}
+                    </div>
+                    <div id="unfollow">
                         <button onclick="unfollowUser('{{user_profile.id}}')" id="non-seguito" data-username="{{ user_profile.id }}" class="btn btn-secondary"
                         >Unfollow
                         </button>
-                    {% endif %}
+                    </div>
                 {% endif %}
             </div>
     </div>

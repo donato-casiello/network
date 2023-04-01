@@ -2,7 +2,7 @@
 
 {% block body %}
     <!--Create new post-->
-    <button id="create">Create new post</button>
+    <button class="btn btn-info" id="create">Create new post</button>
     <div class="container" id="new">
         <form action="{% url 'index' %}" method="post">
             {% csrf_token %}

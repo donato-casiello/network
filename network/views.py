@@ -90,7 +90,7 @@ def profile(request, username):
             break
         else:
             is_following = False
-    context = {"user_posts": user_profile_posts, "user_profile":user_profile, "user":user, "is_following":is_following}
+    context = {"user_profile_posts": user_profile_posts, "user_profile":user_profile, "user":user, "is_following":is_following}
     return render(request, "network/profile.html", context)
 
 @csrf_exempt

@@ -20,8 +20,13 @@ function followUser(id) {
         })
         .then(response => response.json())
         .then(result =>
-            console.log(result));
-    
+            console.log(result),
+            )
+        .then(() => {
+            // Hide follow button and show unfollow button
+            document.querySelector('#unfollow').style.display = 'block';
+            document.querySelector('#follow').style.display = 'none';
+        })
 }
 
 function unfollowUser(id) {
@@ -36,7 +41,12 @@ function unfollowUser(id) {
         })
         .then(response => response.json())
         .then(result =>
-            console.log(result));
+            console.log(result)
+            )
+        .then(() => {
+            document.querySelector('#unfollow').style.display = 'none';
+            document.querySelector('#follow').style.display = 'block';
+        })
 }
 
 // Handle the cookies
