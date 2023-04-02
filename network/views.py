@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
@@ -77,28 +78,37 @@ def register(request):
         return render(request, "network/register.html")
 
 def profile(request, username):
-    # Get the information about the requested user
-    user = User.objects.get(id=request.user.id) # User who is signed in
+    # Get the information about the requested profile
     user_profile = User.objects.get(username=username)
     user_profile_posts = Post.objects.filter(user_id=user_profile)
     followers_count = Follower.objects.filter(following=user_profile).count()
     following_count = Follower.objects.filter(user=user_profile).count()
-    # Check if user follow the user_profile
-    user_following = Follower.objects.filter(user=user)
-    is_following = False
-    for i in user_following:
-        if i.following == user_profile:
-            is_following = True
-            break
-        else:
-            is_following = False
-    context = {"user_profile_posts": user_profile_posts, 
-            "user_profile":user_profile,
-            "user":user,
-            "is_following":is_following,
-            "followers_count":followers_count,
-            "following_count":following_count}
-    return render(request, "network/profile.html", context)
+    # Check if user is logged in 
+    if request.user.is_authenticated:
+        user = User.objects.get(id=request.user.id) # User who is signed in
+        # Check if user follow the user_profile
+        user_following = Follower.objects.filter(user=user)
+        is_following = False
+        for i in user_following:
+            if i.following == user_profile:
+                is_following = True
+                break
+            else:
+                is_following = False 
+        context = {"user_profile_posts": user_profile_posts, 
+                "user_profile":user_profile,
+                "user":user,
+                "is_following":is_following,
+                "followers_count":followers_count,
+                "following_count":following_count}
+        return render(request, "network/profile.html", context)
+    # User is not logged in 
+    else:
+        context = {"user_profile_posts": user_profile_posts, 
+                "user_profile":user_profile,
+                "followers_count":followers_count,
+                "following_count":following_count}
+        return render(request, "network/profile.html", context)
 
 @csrf_exempt
 def follow(request, user_id):
