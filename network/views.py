@@ -6,9 +6,12 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-
+from django.core.paginator import Paginator
+from django.views.generic import ListView
 
 from .models import User, Comment, Post, Follower
+
+# Define the number of posts to display
 
 
 def index(request):
@@ -22,7 +25,11 @@ def index(request):
     else:
         # Render all the posts
         posts = Post.objects.all().order_by('-datetime')
-        context = {"posts": posts}
+        pagePosts = Paginator(posts, 3)
+        # To display the correct number of posts
+        page_number = request.GET.get('page')
+        page_obj = pagePosts.get_page(page_number)
+        context = {"pagePosts": pagePosts, "page_obj": page_obj}
         return render(request, "network/index.html", context)
 
 
