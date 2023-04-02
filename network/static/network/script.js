@@ -2,12 +2,12 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelector('#create').addEventListener('click', showNew);
     })
 
-
 // Show the new post form
 function showNew() {
     document.querySelector('#new').style.display = 'block';
 }
 
+// Follow/Unfollow function
 function followUser(id) {
         console.log(id);
         fetch(`/follow/${id}`,{
@@ -21,33 +21,24 @@ function followUser(id) {
         .then(response => response.json())
         .then(result =>
             console.log(result),
-            )
+        )
         .then(() => {
-            // Hide follow button and show unfollow button
-            document.querySelector('#unfollow').style.display = 'block';
-            document.querySelector('#follow').style.display = 'none';
+            const followButton = document.querySelector('#follow');
+            const followersCount = document.querySelector('#followers-count');
+            console.log(followersCount);
+            if (followButton.innerHTML === 'Follow') {
+                followButton.innerHTML = "Unfollow"
+                followButton.className = "btn btn-secondary";
+                // Update the followers/following count
+                followersCount.innerHTML = parseInt(followersCount.innerHTML) + 1; 
+            } else {
+                followButton.innerHTML = "Follow";
+                followButton.className = "btn btn-primary";
+                // Update the followers count
+                followersCount.innerHTML = parseInt(followersCount.innerHTML) - 1;
+            }
         })
-}
-
-function unfollowUser(id) {
-    console.log(id);
-        fetch(`/unfollow/${id}`,{
-            method : "POST",
-            headers : {"Content-type":"application/json", "X-CSRFToken":getCookie('csrftoken')},
-            body : JSON.stringify({
-                // Content is mandatory
-                content : id
-            })
-        })
-        .then(response => response.json())
-        .then(result =>
-            console.log(result)
-            )
-        .then(() => {
-            document.querySelector('#unfollow').style.display = 'none';
-            document.querySelector('#follow').style.display = 'block';
-        })
-}
+    }
 
 // Handle the cookies
 function getCookie(name) {

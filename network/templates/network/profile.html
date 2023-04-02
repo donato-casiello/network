@@ -13,20 +13,29 @@
             <div class="col">
                 {% if user != user_profile %}
                     {% csrf_token %}
-                    <div id="follow">
-                        <button onclick="followUser('{{user_profile.id}}')" id="seguito" data-username="{{ user_profile.id }}" class="btn btn-primary"
-                        >Follow
-                    </button>
-                    </div>
-                    <div id="unfollow">
-                        <button onclick="unfollowUser('{{user_profile.id}}')" id="non-seguito" data-username="{{ user_profile.id }}" class="btn btn-secondary"
-                        >Unfollow
-                        </button>
-                    </div>
+                    {% if is_following == False %}
+                        <div>
+                            <button onclick="followUser('{{ user_profile.id }}')" id="follow" data-user='{{ user_profile.id }}' class="btn btn-primary" 
+                                >Follow</button>
+                        </div>
+                    {% else %}
+                        <div>
+                            <button onclick="followUser('{{ user_profile.id }}')" id="follow" data-user='{{ user_profile.id }}' class="btn btn-secondary" 
+                                >Unfollow</button>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
     </div>
 
+    <div class="container row">
+        <div class="col">
+            <h2>Followers: <span id="followers-count">{{ followers_count }}</span></h2>
+        </div>
+        <div class="row">
+            <h2>Following: <span id="following-count">{{ following_count }}</span></h2>
+        </div>
+    </div>
     <div class="container d-flex flex-column" id="posts">
         <div>
             <h2>Posts</h2>
