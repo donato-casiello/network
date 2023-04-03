@@ -9,14 +9,8 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.views.generic import ListView
-from django.template.defaulttags import register
 
 from .models import User, Comment, Post, Follower
-
-register = template.Library()
-@register.filter(name='times') 
-def times(number):
-    return range(number)
 
 # Define the number of posts to display
 def index(request):
@@ -140,6 +134,14 @@ def follow(request, user_id):
             new_follower.save()
             return JsonResponse({"message":"Follow successfully", "content":content, "user_to_follow":data["content"]})
     
-        
-
+def following(request):
+    user_log = User.objects.get(id=request.user.id)
+    user_following = Follower.objects.filter(user=user_log)
+    # Create an empty array to store the posts
+    following_posts = []
+    for user in user_following:
+        new_post = Post.objects.filter(user_id=user.following)
+        following_posts.append(new_post)
+    context = {"user_log":user_log, "user_following":user_following, "following_posts":following_posts}
+    return render(request, "network/following.html", context)
         
