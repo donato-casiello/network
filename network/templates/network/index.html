@@ -2,6 +2,7 @@
 
 {% block body %}
     <!--Create new post-->
+    {% if user.is_authenticated %}
     <button class="btn btn-info" id="create">Create new post</button>
     <div class="container" id="new">
         <form action="{% url 'index' %}" method="post">
@@ -11,6 +12,7 @@
             <input class="btn btn-primary my-3" type="submit" value="Post">
         </form>
     </div>
+    {% endif %}
 
     <!--Other posts-->
     <div class="container d-flex flex-column" id="posts">
@@ -28,21 +30,51 @@
         {% endfor %}
     </div>
 
-    <div class="pagination">
-        <span class="step-links">
+    <div class="container">
+    <nav>
+        <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+            <!--
+            {% for x in pagePosts.page_range %}
+                <li class="page-item"><a class="page-link" href="#">{{page_obj.2}}</a></li>
+            {% endfor %}
+            -->
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+          {% endif %}
+        </ul>
+    </nav>
+    </div>
+
+    <!--
+    <div class="pagination">
+        <span class="page-item">
+            {% if page_obj.has_previous %}
+                <a class="page-link" href="?page=1">&laquo; first</a>
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">previous</a>
             {% endif %}
     
-            <span class="current">
+            <span class="page-item">
                 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
             </span>
-    
+            <span><a href="{{page_obj.number}}">{{ page_obj.number }}</a></span>
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a class="page-item" href="?page={{ page_obj.next_page_number }}">next</a>
                 <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
             {% endif %}
         </span>
     </div>
+    -->
+
 {% endblock %}

@@ -1,4 +1,5 @@
 import json
+from django import template
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
@@ -8,12 +9,16 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.views.generic import ListView
+from django.template.defaulttags import register
 
 from .models import User, Comment, Post, Follower
 
+register = template.Library()
+@register.filter(name='times') 
+def times(number):
+    return range(number)
+
 # Define the number of posts to display
-
-
 def index(request):
     if request.method == 'POST':
         # Create new post
@@ -25,13 +30,14 @@ def index(request):
     else:
         # Render all the posts
         posts = Post.objects.all().order_by('-datetime')
-        pagePosts = Paginator(posts, 3)
+        pagePosts = Paginator(posts, 10)
         # To display the correct number of posts
         page_number = request.GET.get('page')
         page_obj = pagePosts.get_page(page_number)
-        context = {"pagePosts": pagePosts, "page_obj": page_obj}
+        # Create a variable to make to for loop 
+        range_page = range(page_obj.paginator.num_pages)
+        context = {"pagePosts": pagePosts, "page_obj": page_obj, "range_page":range_page}
         return render(request, "network/index.html", context)
-
 
 def login_view(request):
     if request.method == "POST":
@@ -52,11 +58,9 @@ def login_view(request):
     else:
         return render(request, "network/login.html")
 
-
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
-
 
 def register(request):
     if request.method == "POST":
@@ -137,5 +141,5 @@ def follow(request, user_id):
             return JsonResponse({"message":"Follow successfully", "content":content, "user_to_follow":data["content"]})
     
         
-        
+
         
