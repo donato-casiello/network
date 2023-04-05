@@ -144,4 +144,12 @@ def following(request):
         following_posts.append(new_post)
     context = {"user_log":user_log, "user_following":user_following, "following_posts":following_posts}
     return render(request, "network/following.html", context)
-        
+
+
+def edit(request, post_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        edited_post = Post.objects.get(pk=post_id)
+        edited_post.content = data["content"]
+        edited_post.save()
+        return JsonResponse({"message":"change succesfully", "data":data["content"]})

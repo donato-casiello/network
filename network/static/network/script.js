@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function(){
     document.querySelector('#create').addEventListener('click', showNew);
     })
 
+
 // Show the new post form
 function showNew() {
     document.querySelector('#new').style.display = 'block';
@@ -47,3 +48,20 @@ function getCookie(name) {
     if(parts.length == 2) return parts.pop().split(';').shift(); 
     }
 
+function editPost(id) {
+    const textareaValue = document.getElementById(`new_content_${id}`).value;
+    const content = document.getElementById(`content_${id}`);
+    fetch(`/edit/${id}`, {
+        method : "POST",
+        headers : {"Content-type":"application/json", "X-CSRFToken":getCookie('csrftoken')},
+        body : JSON.stringify({
+            content : textareaValue,
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        // Change the value of the content
+        content.innerHTML = result.data, 
+        console.log(result)
+    })
+    }
