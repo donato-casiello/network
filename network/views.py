@@ -153,3 +153,11 @@ def edit(request, post_id):
         edited_post.content = data["content"]
         edited_post.save()
         return JsonResponse({"message":"change succesfully", "data":data["content"]})
+
+def like(request, post_id):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        liked_post = Post.objects.get(pk=post_id)
+        liked_post.n_likes += 1
+        liked_post.save()
+        return JsonResponse({"message":"Liked successfully", "n_likes":liked_post.n_likes})

@@ -15,6 +15,9 @@ class Post(models.Model):
     #comment_id = models.ForeignKey(Comment, on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return f"{self.user_id} => content: {self.content} on {self.datetime}"
+    
 class Follower(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
     following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")

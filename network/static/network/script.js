@@ -65,3 +65,16 @@ function editPost(id) {
         console.log(result)
     })
     }
+
+function like(id) {
+    fetch(`/like/${id}`, {
+        method : "POST",
+        headers : {"Content-type":"application/json", "X-CSRFToken":getCookie('csrftoken')},
+        body : JSON.stringify({
+            content : id        
+        })
+    })
+    .then(response => response.json())
+    .then(result => 
+        console.log(result))
+}   
