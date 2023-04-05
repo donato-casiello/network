@@ -66,7 +66,8 @@ function editPost(id) {
     })
     }
 
-function like(id) {
+function likeHandler(id) {
+    const likes = document.getElementById(`like_${id}`).value;
     fetch(`/like/${id}`, {
         method : "POST",
         headers : {"Content-type":"application/json", "X-CSRFToken":getCookie('csrftoken')},
@@ -77,4 +78,27 @@ function like(id) {
     .then(response => response.json())
     .then(result => 
         console.log(result))
+    .then(() => {
+        const likeButton = document.getElementById(`like_${id}`);
+        let likeCount = document.getElementById(`like_count_${id}`)
+        let likeValue = parseInt(likeCount.innerHTML.split("", 1)[0]);
+        if (likeButton.innerHTML == "Like") {
+            likeButton.innerHTML = "Unlike"
+            likeButton.className = "btn btn-warning col-2";
+            likeValue ++;
+            likeCount.innerHTML = likeValue + ' Likes';
+            console.log(likeValue)
+        } else {
+            likeButton.innerHTML = "Like";
+            likeButton.className = "btn btn-outline-warning col-2"
+            if (likeValue == 0 ){
+                // Not below 0
+                likeValue = 0;
+            } else {
+                likeValue --;
+            }
+            likeCount.innerHTML = likeValue + ' Likes';
+            console.log(likeCount)
+        }
+    })
 }   

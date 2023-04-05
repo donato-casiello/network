@@ -22,31 +22,43 @@
             <div class="d-flex flex-column border border-secondary rounded p-3">
                 <h3><a href="{% url 'profile' post.user_id %}">{{ post.user_id }}</a></h3>
                 <span id="content_{{ post.id }}">{{ post.content }}</span>
-                <span>{{ post.n_likes}} Likes<button onclick="like('{{ post.id }}')" class="btn btn-outline-warning">Like</button></span>
-                <!--Edit post-->
-                {% if user.id == post.user_id.id %}
-                   <div>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_edit_post_{{ post.id }}">Edit</button>
-                   </div>
-                   <!--Modal div-->
-                   <div class="modal fade" id="modal_edit_post_{{ post.id }}" tabindex="-1" aria-labelledby="modal_edit_post_{{ post.id }}Label" aria-hidden="true">
-                    <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Post</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <textarea class="form-control" name="content" id="new_content_{{ post.id }}" cols="30" rows="10">{{ post.content }}</textarea>
-                        </div>
-                        <div class="modal-footer">
-                          <!-- data-bs-dismiss is used to close the modal view -->
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button onclick="editPost('{{ post.id}}')"  data-bs-dismiss="modal" type="button" class="btn btn-primary">Save changes</button>
-                        </div>
+                {% if user.is_authenticated %}
+                  <!-- User is the owner of the post -->
+                    <!-- Edit post -->
+                  {% if user.id == post.user_id.id %}
+                    <div>
+                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal_edit_post_{{ post.id }}">Edit</button>
                     </div>
-                    </div>
-                </div>
+                    <!--Modal div-->
+                    <div class="modal fade" id="modal_edit_post_{{ post.id }}" tabindex="-1" aria-labelledby="modal_edit_post_{{ post.id }}Label" aria-hidden="true">
+                      <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Post</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                            <textarea class="form-control" name="content" id="new_content_{{ post.id }}" cols="30" rows="10">{{ post.content }}</textarea>
+                          </div>
+                          <div class="modal-footer">
+                            <!-- data-bs-dismiss is used to close the modal view -->
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button onclick="editPost('{{ post.id}}')"  data-bs-dismiss="modal" type="button" class="btn btn-primary">Save changes</button>
+                          </div>
+                      </div>
+                      </div>
+                  </div>
+                  {% else %}
+                      {% if post.id in postYouLiked %}
+                            <!-- Count the post's likes (using related name of models)-->
+                        <p id="like_count_{{ post.id }}">{{ post.posts.count }} Likes</p>
+                        <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-warning col-2">Unlike</button>
+                      {% else %}
+                          <!-- Count the post's likes (using related name of models)-->
+                          <p id="like_count_{{ post.id }}">{{ post.posts.count }} Likes</p>
+                      <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-outline-warning col-2">Like</button>
+                      {% endif %}
+                  {% endif %}
                 {% endif %}
                 <span class="text-right text-muted">{{ post.datetime }}</span>
             </div>

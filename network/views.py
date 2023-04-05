@@ -9,8 +9,10 @@ from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator
 from django.views.generic import ListView
+from django.db.models import Count
 
-from .models import User, Comment, Post, Follower
+from .models import User, Comment, Post, Follower, Like
+
 
 # Define the number of posts to display
 def index(request):
@@ -25,12 +27,22 @@ def index(request):
         # Render all the posts
         posts = Post.objects.all().order_by('-datetime')
         pagePosts = Paginator(posts, 10)
+        # Handling the likes
+        likes = Like.objects.all()
+        postYouLiked = []
+        try:
+            for like in likes:
+                if like.user.id == request.user.id:
+                    postYouLiked.append(like.post.id)
+        except:
+            postYouLiked = []
         # To display the correct number of posts
         page_number = request.GET.get('page')
         page_obj = pagePosts.get_page(page_number)
+        #count = Like.objects.annotate(post_like=Count("post"))
         # Create a variable to make to for loop 
         range_page = range(page_obj.paginator.num_pages)
-        context = {"pagePosts": pagePosts, "page_obj": page_obj, "range_page":range_page}
+        context = {"pagePosts": pagePosts, "page_obj": page_obj, "range_page":range_page, "likes":likes, "postYouLiked":postYouLiked}
         return render(request, "network/index.html", context)
 
 def login_view(request):
@@ -156,8 +168,14 @@ def edit(request, post_id):
 
 def like(request, post_id):
     if request.method == "POST":
+        user = User.objects.get(pk=request.user.id)
         data = json.loads(request.body)
-        liked_post = Post.objects.get(pk=post_id)
-        liked_post.n_likes += 1
-        liked_post.save()
-        return JsonResponse({"message":"Liked successfully", "n_likes":liked_post.n_likes})
+        post= Post.objects.get(pk=post_id)
+        is_like = Like.objects.filter(user=user, post=post_id)
+        if is_like:
+            is_like.delete()
+            return JsonResponse({"message":"Unlike succesfully", "post":post_id})
+        else:
+            newLike = Like(user=user, post=post)
+            newLike.save()
+            return JsonResponse({"message":"Liked successfully", "post_id":post_id})
