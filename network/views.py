@@ -97,9 +97,25 @@ def register(request):
 def profile(request, username):
     # Get the information about the requested profile
     user_profile = User.objects.get(username=username)
-    user_profile_posts = Post.objects.filter(user_id=user_profile)
+    user_profile_posts = Post.objects.filter(user_id=user_profile).order_by('-datetime')
     followers_count = Follower.objects.filter(following=user_profile).count()
     following_count = Follower.objects.filter(user=user_profile).count()
+    # Render all the posts
+    pagePosts = Paginator(user_profile_posts, 10)
+    # To display the correct number of posts
+    page_number = request.GET.get('page')
+    page_obj = pagePosts.get_page(page_number)
+    # Create a variable to make to for loop 
+    range_page = range(page_obj.paginator.num_pages)
+    # Handling the likes
+    likes = Like.objects.all()
+    postYouLiked = []
+    try:
+        for like in likes:
+            if like.user.id == request.user.id:
+                postYouLiked.append(like.post.id)
+    except:
+        postYouLiked = []
     # Check if user is logged in 
     if request.user.is_authenticated:
         user = User.objects.get(id=request.user.id) # User who is signed in
@@ -117,14 +133,24 @@ def profile(request, username):
                 "user":user,
                 "is_following":is_following,
                 "followers_count":followers_count,
-                "following_count":following_count}
+                "following_count":following_count,
+                "pagePosts": pagePosts,
+                "page_obj": page_obj,
+                "range_page":range_page,
+                "likes":likes,
+                "postYouLiked":postYouLiked}
         return render(request, "network/profile.html", context)
     # User is not logged in 
     else:
         context = {"user_profile_posts": user_profile_posts, 
                 "user_profile":user_profile,
                 "followers_count":followers_count,
-                "following_count":following_count}
+                "following_count":following_count,
+                "pagePosts": pagePosts,
+                "page_obj": page_obj,
+                "range_page":range_page,
+                "likes":likes,
+                "postYouLiked":postYouLiked}
         return render(request, "network/profile.html", context)
 
 @csrf_exempt
@@ -149,12 +175,34 @@ def follow(request, user_id):
 def following(request):
     user_log = User.objects.get(id=request.user.id)
     user_following = Follower.objects.filter(user=user_log)
+    allPosts = Post.objects.all().order_by('id').reverse()
     # Create an empty array to store the posts
     following_posts = []
-    for user in user_following:
-        new_post = Post.objects.filter(user_id=user.following)
-        following_posts.append(new_post)
-    context = {"user_log":user_log, "user_following":user_following, "following_posts":following_posts}
+    for post in allPosts:
+        for user in user_following:
+            if user.following == post.user_id:
+                following_posts.append(post)
+    # Pagination
+    pagePosts = Paginator(following_posts, 10)
+    # To display the correct number of posts
+    page_number = request.GET.get('page')
+    page_obj = pagePosts.get_page(page_number)
+    # Create a variable to make to for loop 
+    # Handling the likes
+    likes = Like.objects.all()
+    postYouLiked = []
+    try:
+        for like in likes:
+            if like.user.id == request.user.id:
+                postYouLiked.append(like.post.id)
+    except:
+        postYouLiked = []
+    context = {"user_log":user_log,
+               "user_following":user_following,
+               "following_posts":following_posts,
+               "page_obj":page_obj,
+               "postYouLiked":postYouLiked
+               }
     return render(request, "network/following.html", context)
 
 
