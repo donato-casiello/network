@@ -2,50 +2,53 @@
 
 {% block body %}
 <div class="container-fluid">
-    <h2>Profile page - {{ user_profile.username }}</h2>
-    <div class="container-fluid row justify-content-evenly">
-            <div class="col">
-                <div class="d-flex flex-column">
-                    <span><strong>Username: </strong>{{ user_profile.username }}</span>
-                    <span><strong>Email: </strong>{{ user_profile.email }}</span>
+    <div>
+                <h1 id="profile-name" class="my-3 text-center">{{ user_profile.username }}</h1>
+                <div class="container-fluid d-flex justify-content-between">
+                        <div class="">
+                            <div class="d-flex flex-column">
+                                <span><strong>Username: </strong>{{ user_profile.username }}</span>
+                                <span><strong>Email: </strong>{{ user_profile.email }}</span>
+                            </div>
+                        </div>
+                        <!-- Follow or Unfollow a user-->
+                        <div class="">
+                        {% if user.is_authenticated %}
+                            {% if user != user_profile %}
+                                {% csrf_token %}
+                                {% if is_following == False %}
+                                    <div>
+                                        <button onclick="followUser('{{ user_profile.id }}')" id="follow" data-user='{{ user_profile.id }}' class="btn btn-primary" 
+                                            >Follow</button>
+                                    </div>
+                                {% else %}
+                                    <div>
+                                        <button onclick="followUser('{{ user_profile.id }}')" id="follow" data-user='{{ user_profile.id }}' class="btn btn-secondary" 
+                                            >Unfollow</button>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                        </div>
                 </div>
-            </div>
-            <!-- Follow or Unfollow a user-->
-            <div class="col">
-            {% if user.is_authenticated %}
-                {% if user != user_profile %}
-                    {% csrf_token %}
-                    {% if is_following == False %}
-                        <div>
-                            <button onclick="followUser('{{ user_profile.id }}')" id="follow" data-user='{{ user_profile.id }}' class="btn btn-primary" 
-                                >Follow</button>
-                        </div>
-                    {% else %}
-                        <div>
-                            <button onclick="followUser('{{ user_profile.id }}')" id="follow" data-user='{{ user_profile.id }}' class="btn btn-secondary" 
-                                >Unfollow</button>
-                        </div>
-                    {% endif %}
-                {% endif %}
-            {% endif %}
-            </div>
-    </div>
 
-    <div class="container row">
-        <div class="col">
-            <h2>Followers: <span id="followers-count">{{ followers_count }}</span></h2>
+                <div class="container d-flex justify-content-around my-3">
+
+                        <h2>Follower: <span id="followers-count">{{ followers_count }}</span></h2>
+
+
+                        <h2>Following: <span id="following-count">{{ following_count }}</span></h2>
+
+                </div>
+                <hr>
         </div>
-        <div class="row">
-            <h2>Following: <span id="following-count">{{ following_count }}</span></h2>
-        </div>
-    </div>
     <div class="container d-flex flex-column" id="posts">
         <div>
             <h2>Posts</h2>
         </div>
         <!-- Display the posts-->
         {% for post in page_obj %}
-            <div class="d-flex flex-column border border-secondary rounded p-3">
+            <div id="post-div" class="d-flex flex-column border border-secondary rounded p-3 my-3">
                 <h3><a href="{% url 'profile' post.user_id %}">{{ post.user_id }}</a></h3>
                 <span id="content_{{ post.id }}">{{ post.content }}</span>
                 {% if user.is_authenticated %}
@@ -78,17 +81,16 @@
                       {% if post.id in postYouLiked %}
                             <!-- Count the post's likes (using related name of models)-->
                         <p id="like_count_{{ post.id }}">{{ post.posts.count }} Likes</p>
-                        <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-warning col-2">Unlike</button>
+                        <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-warning col-2"><i class="fa-solid fa-thumbs-up"></i></button>
                       {% else %}
                           <!-- Count the post's likes (using related name of models)-->
                           <p id="like_count_{{ post.id }}">{{ post.posts.count }} Likes</p>
-                      <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-outline-warning col-2">Like</button>
+                      <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-outline-warning col-2"><i class="fa-solid fa-thumbs-up"></i></button>
                       {% endif %}
                   {% endif %}
                 {% endif %}
                 <span class="text-right text-muted">{{ post.datetime }}</span>
             </div>
-            <hr>
         {% endfor %}
     </div>
     </div>

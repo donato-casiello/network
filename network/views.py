@@ -171,7 +171,8 @@ def follow(request, user_id):
             new_follower = Follower(user=user, following=user_to_follow)
             new_follower.save()
             return JsonResponse({"message":"Follow successfully", "content":content, "user_to_follow":data["content"]})
-    
+
+@login_required(login_url="login")
 def following(request):
     user_log = User.objects.get(id=request.user.id)
     user_following = Follower.objects.filter(user=user_log)

@@ -3,10 +3,10 @@
 {% block body %}
 
     <div class="container d-flex flex-column" id="posts">
-        <h3>Following posts</h3>
+        <h3 class="my-3">Following posts</h3>
         <!-- Display the posts-->
         {% for post in page_obj %}
-            <div class="d-flex flex-column border border-secondary rounded p-3">
+            <div id="post-div" class="d-flex flex-column border border-secondary rounded p-3 my-3">
                 <h3><a href="{% url 'profile' post.user_id %}">{{ post.user_id }}</a></h3>
                 <span id="content_{{ post.id }}">{{ post.content }}</span>
                 {% if user.is_authenticated %}
@@ -39,17 +39,16 @@
                       {% if post.id in postYouLiked %}
                             <!-- Count the post's likes (using related name of models)-->
                         <p id="like_count_{{ post.id }}">{{ post.posts.count }} Likes</p>
-                        <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-warning col-2">Unlike</button>
+                        <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-warning col-2"><i class="fa-solid fa-thumbs-up"></i></button>
                       {% else %}
                           <!-- Count the post's likes (using related name of models)-->
                           <p id="like_count_{{ post.id }}">{{ post.posts.count }} Likes</p>
-                      <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-outline-warning col-2">Like</button>
+                      <button id="like_{{ post.id }}" onclick="likeHandler('{{ post.id }}')" class="btn btn-outline-warning col-2"><i class="fa-solid fa-thumbs-up"></i></button>
                       {% endif %}
                   {% endif %}
                 {% endif %}
                 <span class="text-right text-muted">{{ post.datetime }}</span>
             </div>
-            <hr>
         {% endfor %}
         <!-- Pagination -->
         <div class="container">
